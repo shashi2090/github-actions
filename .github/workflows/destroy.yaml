@@ -31,7 +31,7 @@ jobs:
         working-directory: infra
         run: terraform init
 
-     - name: Plan Terraform Destroy
+      - name: Plan Terraform Destroy
         working-directory: infra
         run: terraform plan -destroy -out=destroy.tfplan
 
