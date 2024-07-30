@@ -1,7 +1,11 @@
 name: Terraform Destroy
 
 on:
-  workflow_dispatch:  # Manually trigger the workflow
+  workflow_dispatch:
+    inputs:
+      approve:
+        description: 'Type "yes" to approve'
+        required: true
 
 jobs:
   terraform-destroy:
@@ -21,7 +25,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  # Specify your AWS region
+          aws-region: us-west-2  # Specify your AWS region
 
       - name: Initialize Terraform
         working-directory: infra
@@ -31,8 +35,15 @@ jobs:
         working-directory: infra
         run: terraform plan -destroy
 
+      - name: Check approval
+        id: check-approval
+        run: |
+          if [ "${{ github.event.inputs.approve }}" != "yes" ]; then
+            echo "Approval not granted. Exiting."
+            exit 1
+          fi
+
       - name: Destroy Terraform
+        if: ${{ steps.check-approval.outcome == 'success' }}
         working-directory: infra
-        run: terraform destroy
-        env:
-          TF_INPUT: "true"  # Prompt for manual approval
+        run: terraform destroy -auto-approve

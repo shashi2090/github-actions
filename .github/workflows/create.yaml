@@ -1,7 +1,11 @@
 name: Terraform Apply
 
 on:
-  workflow_dispatch:  # Manually trigger the workflow
+  workflow_dispatch:
+    inputs:
+      approve:
+        description: 'Type "yes" to approve'
+        required: true
 
 jobs:
   terraform-apply:
@@ -31,8 +35,15 @@ jobs:
         working-directory: infra
         run: terraform plan
 
+      - name: Check approval
+        id: check-approval
+        run: |
+          if [ "${{ github.event.inputs.approve }}" != "yes" ]; then
+            echo "Approval not granted. Exiting."
+            exit 1
+          fi
+
       - name: Apply Terraform
+        if: ${{ steps.check-approval.outcome == 'success' }}
         working-directory: infra
-        run: terraform apply
-        env:
-          TF_INPUT: "true"  # Prompt for manual approval
+        run: terraform apply -auto-approve
