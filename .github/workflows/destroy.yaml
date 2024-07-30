@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       approve:
-        description: 'Approval required after reviewing Terraform destroy plan. Type "yes" to approve.'
+        description: 'Type "yes" to approve'
         required: true
 
 jobs:
@@ -33,16 +33,7 @@ jobs:
 
       - name: Plan Terraform Destroy
         working-directory: infra
-        run: terraform plan -destroy -out=destroy.tfplan
-
-      - name: Display Terraform Destroy Plan
-        working-directory: infra
-        run: terraform show destroy.tfplan
-
-      - name: Wait for manual approval
-        run: |
-          echo "Waiting for manual approval..."
-          sleep 300  # Wait for 5 minutes for manual approval
+        run: terraform plan -destroy
 
       - name: Check approval
         id: check-approval
@@ -51,11 +42,6 @@ jobs:
             echo "Approval not granted. Exiting."
             exit 1
           fi
-
-      - name: Destroy Terraform
-        if: ${{ steps.check-approval.outcome == 'success' }}
-        working-directory: infra
-        run: terraform apply -destroy -auto-approve destroy.tfplan
 
       - name: Destroy Terraform
         if: ${{ steps.check-approval.outcome == 'success' }}
