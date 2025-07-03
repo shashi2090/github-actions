@@ -5,7 +5,7 @@ on:
         branches: main
 
 jobs:
-    first job:
+    first_job:
         runs-on: ubuntu-latest
         steps:
             - name: hello
