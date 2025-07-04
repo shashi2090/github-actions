@@ -24,7 +24,7 @@ jobs:
               run: echo "the repository is ${{ github.repository }}"
 
             - name: checking runner context
-              run: echo "the repository is ${{ runner}}"
+              run: echo "the repository is ${{ runner.arch}}"
 
             - name: checking secrets context-2
               run: echo "the repository is ${{ secrets.GITHUB_TOKEN}}"
