@@ -1,8 +1,14 @@
 name: this is my first github action workflow
 
 on:
-    push: 
-        branches: main
+    workflow_dispatch: 
+     inputs:
+      logLevel:
+        description: 'cheking with true and false'
+        required: true
+        default: true
+        type: boolean
+
 
 env:
     name: john
@@ -13,3 +19,12 @@ jobs:
         steps:
             - name: hello
               run: echo ${{ env.name }}
+            
+            - name: checking context
+              run: echo "the repository is ${{ github.repository }}"
+
+            - name: checking runner context
+              run: echo "the repository is ${{ runner}}"
+
+            - name: checking secrets context-2
+              run: echo "the repository is ${{ secrets.GITHUB_TOKEN}}"
